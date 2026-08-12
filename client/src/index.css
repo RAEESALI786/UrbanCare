@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@theme {
+  /* Color: workshop navy + brass, on a cool linen paper */
+  --color-paper: #ECEEE8;
+  --color-paper-2: #E3E5DD;
+  --color-ink: #14231F;
+  --color-ink-soft: #45564F;
+  --color-navy: #101B2D;
+  --color-navy-2: #1D3151;
+  --color-brass: #C2872E;
+  --color-brass-light: #E8B04B;
+  --color-brass-dark: #96661E;
+  --color-line: #CDD0C4;
+  --color-ok: #3E7A54;
+  --color-cream: #F7F6F1;
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --shadow-ticket: 0 1px 2px rgba(16,27,45,0.06), 0 12px 24px -12px rgba(16,27,45,0.28);
+  --shadow-lift: 0 20px 40px -16px rgba(16,27,45,0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-brass);
+  color: var(--color-navy);
+}
+
+/* Perforated ticket divider */
+.perforation {
+  position: relative;
+  border-top: 1.5px dashed color-mix(in srgb, var(--color-ink) 25%, transparent);
+}
+.perforation::before,
+.perforation::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  width: 16px;
+  height: 16px;
+  background: var(--color-paper);
+  border-radius: 999px;
+}
+.perforation::before { left: -8px; }
+.perforation::after { right: -8px; }
+
+.ticket-notch-left::before,
+.ticket-notch-right::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: var(--color-paper);
+  border-radius: 999px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.ticket-notch-left::before { left: -8px; }
+.ticket-notch-right::after { right: -8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.focus-ring:focus-visible {
+  outline: 2.5px solid var(--color-brass);
+  outline-offset: 2px;
+}
+
+@keyframes stampIn {
+  0% { opacity: 0; transform: scale(1.4) rotate(-14deg); }
+  60% { opacity: 1; transform: scale(0.94) rotate(-8deg); }
+  100% { opacity: 1; transform: scale(1) rotate(-8deg); }
+}
+.stamp-in {
+  animation: stampIn 0.5s cubic-bezier(.2,.8,.3,1.2) both;
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise-in {
+  animation: riseIn 0.6s ease both;
+}
