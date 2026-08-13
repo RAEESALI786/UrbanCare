@@ -11,7 +11,7 @@ function generateTicketId() {
 
 // Create a booking
 router.post("/", requireAuth, async (req, res) => {
-  const { serviceSlug, serviceName, price, date, slot, address, notes, breakdown } = req.body;
+  const { serviceSlug, serviceName, price, date, slot, address, notes, breakdown, workerName } = req.body;
 
   if (!serviceSlug || !serviceName || !date || !slot || !address) {
     return res.status(400).json({ message: "Missing required booking fields." });
@@ -30,6 +30,7 @@ router.post("/", requireAuth, async (req, res) => {
       address,
       notes,
       breakdown,
+      workerName,
     });
     res.status(201).json(booking);
   } catch (err) {

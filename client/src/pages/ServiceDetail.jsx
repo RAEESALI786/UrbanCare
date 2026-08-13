@@ -1,12 +1,18 @@
+import { useState } from "react";
 import { useParams, Navigate, useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { getServiceBySlug } from "../lib/services";
+import { getWorkersFor } from "../lib/workers";
 import ServiceIcon from "../components/ServiceIcon";
+import WorkerPicker from "../components/WorkerPicker";
 
 export default function ServiceDetail() {
   const { slug } = useParams();
   const service = getServiceBySlug(slug);
   const navigate = useNavigate();
+
+  const workers = getWorkersFor(slug);
+  const [worker, setWorker] = useState(workers[0] || null);
 
   if (!service) return <Navigate to="/" replace />;
 
@@ -16,6 +22,7 @@ export default function ServiceDetail() {
         serviceSlug: service.slug,
         serviceName: service.name,
         price: service.price,
+        workerName: worker?.name,
       },
     });
   };
@@ -59,16 +66,24 @@ export default function ServiceDetail() {
             <span className="text-sm text-ink-soft">Price</span>
             <span className="font-mono text-lg font-semibold text-navy">{service.price}</span>
           </div>
-
-          <button
-            type="button"
-            onClick={goToCheckout}
-            className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-navy px-6 py-3.5 text-sm font-semibold text-cream shadow-ticket transition-colors hover:bg-navy-2 focus-ring"
-          >
-            Proceed to checkout
-            <ArrowRight size={16} />
-          </button>
         </div>
+      </div>
+
+      {workers.length > 0 && (
+        <div className="mt-8 max-w-3xl">
+          <WorkerPicker slug={slug} selectedId={worker?.id} onSelect={setWorker} />
+        </div>
+      )}
+
+      <div className="mt-8 max-w-3xl">
+        <button
+          type="button"
+          onClick={goToCheckout}
+          className="flex w-full items-center justify-center gap-2 rounded-full bg-navy px-6 py-3.5 text-sm font-semibold text-cream shadow-ticket transition-colors hover:bg-navy-2 focus-ring sm:w-auto sm:px-10"
+        >
+          Proceed to checkout
+          <ArrowRight size={16} />
+        </button>
       </div>
     </div>
   );

@@ -2,10 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Scissors, Check, ArrowRight } from "lucide-react";
 import { SALON_SERVICES, formatINR } from "../lib/salonServices";
+import { getWorkersFor } from "../lib/workers";
+import WorkerPicker from "../components/WorkerPicker";
 
 export default function SalonBooking() {
   const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState([SALON_SERVICES[0].id]);
+  const workers = getWorkersFor("salon-for-women");
+  const [worker, setWorker] = useState(workers[0] || null);
 
   const toggle = (id) =>
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
@@ -21,6 +25,7 @@ export default function SalonBooking() {
         serviceName: `Salon at Home — ${selected.map((s) => s.name).join(", ")}`,
         price: formatINR(total),
         breakdown: selected.map((s) => ({ label: s.name, amount: s.price })),
+        workerName: worker?.name,
       },
     });
   };
@@ -42,6 +47,7 @@ export default function SalonBooking() {
       </p>
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[1.3fr_1fr]">
+        {/* Service picker */}
         <div>
           <div className="grid gap-3 sm:grid-cols-2">
             {SALON_SERVICES.map((s) => {
@@ -76,8 +82,13 @@ export default function SalonBooking() {
               );
             })}
           </div>
+
+          <div className="mt-8">
+            <WorkerPicker slug="salon-for-women" selectedId={worker?.id} onSelect={setWorker} />
+          </div>
         </div>
 
+        {/* Sticky order-ticket summary */}
         <div className="lg:sticky lg:top-24 lg:self-start">
           <div className="rounded-2xl border border-line bg-cream p-6 shadow-ticket">
             <h2 className="font-display text-lg text-navy">Your salon ticket</h2>

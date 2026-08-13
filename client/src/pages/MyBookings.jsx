@@ -67,6 +67,9 @@ export default function MyBookings() {
                   {b.ticketId}
                 </p>
                 <h3 className="mt-1 font-display text-lg text-navy">{b.serviceName}</h3>
+                {b.workerName && (
+                  <p className="mt-0.5 text-xs text-ink-soft">Professional: {b.workerName}</p>
+                )}
               </div>
               <span
                 className={`rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-wide ${

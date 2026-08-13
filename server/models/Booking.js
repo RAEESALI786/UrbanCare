@@ -12,6 +12,7 @@ const bookingSchema = new mongoose.Schema(
     slot: { type: String, required: true },
     address: { type: String, required: true },
     notes: String,
+    workerName: String,
     breakdown: [
       {
         label: String,

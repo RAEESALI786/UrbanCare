@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Paintbrush, Check, ArrowRight, ShieldCheck, Clock3, CheckCircle2 } from "lucide-react";
 import { BHK_OPTIONS, MATERIAL_OPTIONS, PAINT_TYPES, ADD_ONS, formatINR } from "../lib/painting";
+import { getWorkersFor } from "../lib/workers";
+import WorkerPicker from "../components/WorkerPicker";
 
 export default function PaintingBooking() {
   const navigate = useNavigate();
@@ -10,6 +12,8 @@ export default function PaintingBooking() {
   const [materialId, setMaterialId] = useState(MATERIAL_OPTIONS[0].id);
   const [paintTypeId, setPaintTypeId] = useState(PAINT_TYPES[0].id);
   const [addonIds, setAddonIds] = useState([]);
+  const workers = getWorkersFor("painting");
+  const [worker, setWorker] = useState(workers[0] || null);
 
   const bhk = BHK_OPTIONS.find((b) => b.id === bhkId);
   const material = MATERIAL_OPTIONS.find((m) => m.id === materialId);
@@ -47,6 +51,7 @@ export default function PaintingBooking() {
         notes: addonIds.length
           ? `Add-ons: ${addonIds.map((id) => ADD_ONS.find((a) => a.id === id)?.label).join(", ")}`
           : "",
+        workerName: worker?.name,
       },
     });
   };
@@ -75,6 +80,7 @@ export default function PaintingBooking() {
       </div>
 
       <div className="mt-12 grid gap-8 lg:grid-cols-[1.3fr_1fr]">
+        {/* Configurator */}
         <div className="space-y-8">
           <ConfigSection step="1" title="How big is your home?">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -168,8 +174,13 @@ export default function PaintingBooking() {
               })}
             </div>
           </ConfigSection>
+
+          <ConfigSection step={suppliesOwnPaint ? "4" : "5"} title="Choose your professional">
+            <WorkerPicker slug="painting" selectedId={worker?.id} onSelect={setWorker} showHeading={false} />
+          </ConfigSection>
         </div>
 
+        {/* Sticky order-ticket summary */}
         <div className="lg:sticky lg:top-24 lg:self-start">
           <div className="rounded-2xl border border-line bg-cream p-6 shadow-ticket">
             <h2 className="font-display text-lg text-navy">Your painting ticket</h2>
@@ -233,7 +244,13 @@ function OptionCard({ selected, onClick, children, align = "center", image }) {
         selected ? "border-brass bg-brass/10 shadow-ticket" : "border-line bg-cream hover:border-brass/50"
       }`}
     >
-      {image && <img src={image} alt="" className="h-60 w-full object-cover" />}
+      {image && (
+        <img
+          src={image}
+          alt=""
+          className={`h-20 w-full object-cover ${align === "center" ? "" : ""}`}
+        />
+      )}
       <div className={`flex flex-col px-4 py-3.5 ${align === "center" ? "items-center text-center" : "items-start w-full"}`}>
         {children}
       </div>

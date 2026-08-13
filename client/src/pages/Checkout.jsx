@@ -6,6 +6,13 @@ import api from "../lib/api";
 
 const SLOTS = ["9:00 AM", "11:00 AM", "1:00 PM", "3:00 PM", "5:00 PM", "7:00 PM"];
 
+/**
+ * Shared checkout step for every service/product on the site.
+ * Expects router state of the shape:
+ *   { serviceSlug, serviceName, price, breakdown? (array of {label, amount}), notes? }
+ * Pages that let the user pick options (painting, salon, etc.) build that
+ * object and navigate("/checkout", { state }) once the user is ready.
+ */
 export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -20,6 +27,7 @@ export default function Checkout() {
   const [error, setError] = useState("");
   const [confirmed, setConfirmed] = useState(null);
 
+  // No order was handed off (e.g. someone navigated to /checkout directly)
   if (!order?.serviceSlug) {
     return (
       <div className="mx-auto max-w-md px-5 py-20 text-center">
@@ -56,6 +64,7 @@ export default function Checkout() {
         address,
         notes,
         breakdown: order.breakdown,
+        workerName: order.workerName,
       });
       setConfirmed(res.data);
     } catch (err) {
@@ -93,10 +102,14 @@ export default function Checkout() {
       <h1 className="mt-2 font-display text-3xl text-navy">Confirm your booking</h1>
 
       <div className="mt-10 grid gap-8 md:grid-cols-[1fr_1.1fr]">
+        {/* Order summary */}
         <div className="rounded-2xl border border-line bg-cream p-6 shadow-ticket">
           <h2 className="font-display text-lg text-navy">Order summary</h2>
 
           <p className="mt-3 font-semibold text-navy">{order.serviceName}</p>
+          {order.workerName && (
+            <p className="mt-1 text-sm text-ink-soft">Professional: {order.workerName}</p>
+          )}
 
           {order.breakdown?.length > 0 && (
             <dl className="mt-4 space-y-2 text-sm">
@@ -126,6 +139,7 @@ export default function Checkout() {
           </button>
         </div>
 
+        {/* Checkout form */}
         <form onSubmit={handleSubmit} className="rounded-2xl border border-line bg-cream p-6 shadow-ticket">
           <h2 className="font-display text-lg text-navy">Schedule &amp; address</h2>
 

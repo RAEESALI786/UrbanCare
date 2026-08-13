@@ -1,11 +1,17 @@
+import { useState } from "react";
 import { useNavigate, useParams, Navigate } from "react-router-dom";
 import { ArrowRight, ShoppingBag } from "lucide-react";
 import { getPromoProduct } from "../lib/promoProducts";
+import { getWorkersFor } from "../lib/workers";
+import WorkerPicker from "../components/WorkerPicker";
 
 export default function PromoOrder() {
   const { slug } = useParams();
   const product = getPromoProduct(slug);
   const navigate = useNavigate();
+
+  const workers = getWorkersFor(slug);
+  const [worker, setWorker] = useState(workers[0] || null);
 
   if (!product) return <Navigate to="/" replace />;
 
@@ -15,6 +21,7 @@ export default function PromoOrder() {
         serviceSlug: product.slug,
         serviceName: product.name,
         price: product.price,
+        workerName: worker?.name,
       },
     });
   };
@@ -57,16 +64,24 @@ export default function PromoOrder() {
             <span className="text-sm text-ink-soft">Price</span>
             <span className="font-mono text-lg font-semibold text-navy">{product.price}</span>
           </div>
-
-          <button
-            type="button"
-            onClick={goToCheckout}
-            className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-navy px-6 py-3.5 text-sm font-semibold text-cream shadow-ticket transition-colors hover:bg-navy-2 focus-ring"
-          >
-            Proceed to checkout
-            <ArrowRight size={16} />
-          </button>
         </div>
+      </div>
+
+      {workers.length > 0 && (
+        <div className="mt-8 max-w-3xl">
+          <WorkerPicker slug={slug} selectedId={worker?.id} onSelect={setWorker} />
+        </div>
+      )}
+
+      <div className="mt-8 max-w-3xl">
+        <button
+          type="button"
+          onClick={goToCheckout}
+          className="flex w-full items-center justify-center gap-2 rounded-full bg-navy px-6 py-3.5 text-sm font-semibold text-cream shadow-ticket transition-colors hover:bg-navy-2 focus-ring sm:w-auto sm:px-10"
+        >
+          Proceed to checkout
+          <ArrowRight size={16} />
+        </button>
       </div>
     </div>
   );
