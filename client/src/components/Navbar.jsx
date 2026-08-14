@@ -17,6 +17,7 @@ export default function Navbar() {
   const links = [
     { to: "/#services", label: "Services" },
     { to: "/#how-it-works", label: "How it works" },
+    { to: "/about", label: "About us" },
   ];
 
   return (

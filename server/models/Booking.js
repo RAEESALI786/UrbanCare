@@ -13,6 +13,13 @@ const bookingSchema = new mongoose.Schema(
     address: { type: String, required: true },
     notes: String,
     workerName: String,
+    advanceAmount: Number,
+    remainingAmount: Number,
+    paymentStatus: {
+      type: String,
+      enum: ["advance_paid", "fully_paid"],
+      default: "advance_paid",
+    },
     breakdown: [
       {
         label: String,

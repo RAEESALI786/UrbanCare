@@ -1,10 +1,25 @@
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
-import { CalendarClock, MapPin, CheckCircle2, AlertTriangle, ClipboardList } from "lucide-react";
+import { CalendarClock, MapPin, CheckCircle2, AlertTriangle, ClipboardList, Wallet } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useLocationCity } from "../context/LocationContext";
+import { isServiceable } from "../lib/serviceCities";
 import api from "../lib/api";
 
 const SLOTS = ["9:00 AM", "11:00 AM", "1:00 PM", "3:00 PM", "5:00 PM", "7:00 PM"];
+const ADVANCE_RATE = 0.1; // customer pays 10% now, 90% after the job is done
+
+// Pulls a plain number out of a display price string like "₹21,799" or
+// "₹2,999 per room" so we can compute the 10% advance.
+function parsePrice(priceStr) {
+  if (!priceStr) return 0;
+  const digitsOnly = priceStr.replace(/[^\d]/g, "");
+  return digitsOnly ? parseInt(digitsOnly, 10) : 0;
+}
+
+function formatINR(n) {
+  return `₹${Math.round(n).toLocaleString("en-IN")}`;
+}
 
 /**
  * Shared checkout step for every service/product on the site.
@@ -17,7 +32,9 @@ export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { city } = useLocationCity();
   const order = location.state;
+  const serviceable = isServiceable(city);
 
   const [date, setDate] = useState("");
   const [slot, setSlot] = useState(SLOTS[0]);
@@ -46,9 +63,21 @@ export default function Checkout() {
     );
   }
 
+  const total = parsePrice(order.price);
+  const advanceAmount = Math.round(total * ADVANCE_RATE);
+  const remainingAmount = total - advanceAmount;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    if (!serviceable) {
+      setError(
+        city
+          ? `We don't currently operate in ${city}. Please choose a serviceable city from the location menu above.`
+          : "Please select your city from the location menu above before booking."
+      );
+      return;
+    }
     if (!user) {
       setError("Please log in to confirm your booking.");
       return;
@@ -65,6 +94,8 @@ export default function Checkout() {
         notes,
         breakdown: order.breakdown,
         workerName: order.workerName,
+        advanceAmount,
+        remainingAmount,
       });
       setConfirmed(res.data);
     } catch (err) {
@@ -84,8 +115,18 @@ export default function Checkout() {
         <h1 className="mt-5 font-display text-3xl text-navy">Job ticket confirmed</h1>
         <p className="mt-2 text-ink-soft">
           Ticket <span className="font-mono">{confirmed.ticketId}</span> for {order.serviceName}{" "}
-          on {date} at {slot}, total {order.price}.
+          on {date} at {slot}.
         </p>
+        <div className="mx-auto mt-6 max-w-xs rounded-xl border border-line bg-cream p-4 text-left text-sm shadow-ticket">
+          <div className="flex justify-between">
+            <span className="text-ink-soft">Paid now (10% advance)</span>
+            <span className="font-mono font-semibold text-navy">{formatINR(advanceAmount)}</span>
+          </div>
+          <div className="mt-1.5 flex justify-between">
+            <span className="text-ink-soft">Due after service</span>
+            <span className="font-mono font-semibold text-navy">{formatINR(remainingAmount)}</span>
+          </div>
+        </div>
         <Link
           to="/bookings"
           className="mt-8 inline-block rounded-full bg-navy px-6 py-3 text-sm font-semibold text-cream focus-ring"
@@ -130,6 +171,23 @@ export default function Checkout() {
             <span className="font-mono text-xl font-semibold text-navy">{order.price}</span>
           </div>
 
+          <div className="perforation my-5" />
+
+          <div className="rounded-xl border border-brass/40 bg-brass/10 p-4">
+            <div className="flex items-center gap-2 text-brass-dark">
+              <Wallet size={16} />
+              <span className="text-sm font-semibold">Pay in two parts</span>
+            </div>
+            <div className="mt-3 flex items-center justify-between text-sm">
+              <span className="text-ink-soft">Pay now to confirm (10%)</span>
+              <span className="font-mono font-semibold text-navy">{formatINR(advanceAmount)}</span>
+            </div>
+            <div className="mt-1.5 flex items-center justify-between text-sm">
+              <span className="text-ink-soft">Due after the service (90%)</span>
+              <span className="font-mono font-semibold text-navy">{formatINR(remainingAmount)}</span>
+            </div>
+          </div>
+
           <button
             type="button"
             onClick={() => navigate(-1)}
@@ -142,6 +200,17 @@ export default function Checkout() {
         {/* Checkout form */}
         <form onSubmit={handleSubmit} className="rounded-2xl border border-line bg-cream p-6 shadow-ticket">
           <h2 className="font-display text-lg text-navy">Schedule &amp; address</h2>
+
+          {!serviceable && (
+            <div className="mt-4 flex items-start gap-2 rounded-xl border border-brass/40 bg-brass/10 px-4 py-3 text-sm text-brass-dark">
+              <AlertTriangle size={16} className="mt-0.5 shrink-0" />
+              <span>
+                {city
+                  ? `We don't currently operate in ${city}. Choose a serviceable city from the location menu at the top of the page to continue.`
+                  : "Select your city from the location menu at the top of the page to continue."}
+              </span>
+            </div>
+          )}
 
           <label className="mt-4 block">
             <span className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-ink">
@@ -217,11 +286,14 @@ export default function Checkout() {
 
           <button
             type="submit"
-            disabled={busy}
+            disabled={busy || !serviceable}
             className="mt-5 w-full rounded-full bg-navy px-6 py-3.5 text-sm font-semibold text-cream shadow-ticket transition-colors hover:bg-navy-2 disabled:opacity-60 focus-ring"
           >
-            {busy ? "Confirming…" : `Confirm booking · ${order.price}`}
+            {busy ? "Confirming…" : `Pay ${formatINR(advanceAmount)} now to confirm`}
           </button>
+          <p className="mt-2 text-center text-xs text-ink-soft">
+            Remaining {formatINR(remainingAmount)} is due after the service is completed.
+          </p>
         </form>
       </div>
     </div>

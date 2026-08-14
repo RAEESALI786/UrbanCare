@@ -104,6 +104,27 @@ export default function MyBookings() {
                 </dl>
               </div>
             )}
+
+            {(b.advanceAmount || b.remainingAmount) && (
+              <div className="perforation mt-4 pt-3">
+                <div className="flex justify-between text-xs">
+                  <span className="text-ink-soft">
+                    {b.paymentStatus === "fully_paid" ? "Paid (advance)" : "Paid now (10% advance)"}
+                  </span>
+                  <span className="font-mono font-semibold text-ok">
+                    ₹{(b.advanceAmount || 0).toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <div className="mt-1 flex justify-between text-xs">
+                  <span className="text-ink-soft">
+                    {b.paymentStatus === "fully_paid" ? "Paid (final)" : "Due after service"}
+                  </span>
+                  <span className="font-mono font-semibold text-navy">
+                    ₹{(b.remainingAmount || 0).toLocaleString("en-IN")}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
