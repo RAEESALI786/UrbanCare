@@ -7,7 +7,7 @@ export default function Hero() {
       <div className="mx-auto grid max-w-6xl gap-12 px-5 pb-16 pt-14 md:grid-cols-[1.1fr_0.9fr] md:pb-24 md:pt-20">
         <div className="rise-in">
           <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-line bg-cream px-3 py-1 font-mono text-xs uppercase tracking-widest text-ink-soft">
-            5 services · Background-checked pros
+            6 services · Background-checked pros
           </p>
           <h1 className="font-display text-[2.6rem] leading-[1.05] tracking-tight text-navy sm:text-6xl">
             A work order for

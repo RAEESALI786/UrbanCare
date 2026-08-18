@@ -4,6 +4,7 @@ import { CalendarClock, MapPin, CheckCircle2, AlertTriangle, ClipboardList, Wall
 import { useAuth } from "../context/AuthContext";
 import { useLocationCity } from "../context/LocationContext";
 import { isServiceable } from "../lib/serviceCities";
+import AddressMapPicker from "../components/AddressMapPicker";
 import api from "../lib/api";
 
 const SLOTS = ["9:00 AM", "11:00 AM", "1:00 PM", "3:00 PM", "5:00 PM", "7:00 PM"];
@@ -39,6 +40,8 @@ export default function Checkout() {
   const [date, setDate] = useState("");
   const [slot, setSlot] = useState(SLOTS[0]);
   const [address, setAddress] = useState("");
+  const [addressCoords, setAddressCoords] = useState(null);
+  const [showMapPicker, setShowMapPicker] = useState(false);
   const [notes, setNotes] = useState(order?.notes || "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -91,6 +94,9 @@ export default function Checkout() {
         date,
         slot,
         address,
+        addressLat: addressCoords?.lat,
+        addressLng: addressCoords?.lng,
+        city,
         notes,
         breakdown: order.breakdown,
         workerName: order.workerName,
@@ -247,8 +253,17 @@ export default function Checkout() {
           </div>
 
           <label className="mt-4 block">
-            <span className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-ink">
-              <MapPin size={15} /> Address
+            <span className="mb-1.5 flex items-center justify-between text-sm font-medium text-ink">
+              <span className="flex items-center gap-1.5">
+                <MapPin size={15} /> Address
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowMapPicker(true)}
+                className="text-xs font-semibold text-brass-dark underline decoration-brass underline-offset-2 hover:text-navy"
+              >
+                Pin on map
+              </button>
             </span>
             <input
               type="text"
@@ -259,6 +274,17 @@ export default function Checkout() {
               className="w-full rounded-xl border border-line bg-paper px-4 py-3 text-sm outline-none focus:border-brass focus-ring"
             />
           </label>
+
+          {showMapPicker && (
+            <AddressMapPicker
+              onClose={() => setShowMapPicker(false)}
+              onConfirm={({ address: pickedAddress, lat, lng }) => {
+                setAddress(pickedAddress);
+                setAddressCoords({ lat, lng });
+                setShowMapPicker(false);
+              }}
+            />
+          )}
 
           <label className="mt-4 block">
             <span className="mb-1.5 block text-sm font-medium text-ink">Notes (optional)</span>

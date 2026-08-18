@@ -69,6 +69,7 @@ router.post("/chat", optionalAuth, async (req, res) => {
       const calls = response.functionCalls || [];
       if (response.text) finalText = response.text;
 
+      // Append the model's turn (text and/or function calls) to history
       const modelParts = response.candidates?.[0]?.content?.parts || [{ text: response.text || "" }];
       contents.push({ role: "model", parts: modelParts });
 

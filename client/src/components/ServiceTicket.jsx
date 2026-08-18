@@ -6,7 +6,7 @@ export default function ServiceTicket({ service, index }) {
   return (
     <Link
       to={`/services/${service.slug}`}
-      className="rise-in group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-cream shadow-ticket transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lift focus-ring"
+      className="rise-in group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-cream shadow-ticket transition-all duration-300 hover:-translate-y-1.5 hover:border-brass/60 hover:shadow-lift focus-ring"
       style={{ animationDelay: `${index * 90}ms` }}
     >
       <div className="relative h-40 w-full overflow-hidden">
@@ -17,7 +17,7 @@ export default function ServiceTicket({ service, index }) {
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-navy/60 via-navy/0 to-navy/0" />
-        <span className="absolute left-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-cream/95 text-navy shadow-ticket">
+        <span className="absolute left-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-cream/95 text-navy shadow-ticket transition-transform duration-300 group-hover:scale-110">
           <ServiceIcon name={service.icon} size={18} />
         </span>
         <span className="absolute right-4 top-4 rounded-full bg-cream/95 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-ink-soft shadow-ticket">

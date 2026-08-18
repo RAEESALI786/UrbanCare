@@ -3,7 +3,7 @@ import { QUICK_LINKS } from "../lib/quickLinks";
 
 // First 5 items become compact list cards, the next 2 become large photo tiles.
 const LEFT_ITEMS = QUICK_LINKS.slice(0, 5);
-const RIGHT_ITEMS = QUICK_LINKS.slice(6, 7);
+const RIGHT_ITEMS = QUICK_LINKS.slice(5, 7);
 
 export default function QuickLinksFeature() {
   return (

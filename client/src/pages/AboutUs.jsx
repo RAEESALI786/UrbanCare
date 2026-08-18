@@ -61,7 +61,7 @@ export default function AboutUs() {
       {/* CEO story */}
       <section className="mt-16 overflow-hidden rounded-3xl border border-line bg-cream shadow-ticket md:flex md:items-stretch">
         <img
-          src="/ceo.png"
+          src="ceo.png"
           alt="Raees Ali, Founder & CEO of UrbanCare"
           className="h-72 w-full object-cover md:h-auto md:w-2/5 md:flex-shrink-0"
         />
@@ -122,7 +122,7 @@ export default function AboutUs() {
           </div>
         </div>
         <img
-          src="https://getyourmaids.com/wp-content/uploads/2025/09/middle-aged-woman-wearing-apron-rubber-gloves-holding-bucket-with-cleaning-tools-1024x683.jpg"
+          src="https://homemaidbetter.com/wp-content/uploads/2019/05/shutterstock_526418566.jpg"
           alt="An UrbanCare professional at work"
           className="h-64 w-full rounded-2xl object-cover shadow-ticket md:h-80"
         />

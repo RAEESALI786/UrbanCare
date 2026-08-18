@@ -10,11 +10,11 @@ export default function ServicesSection() {
             The lineup
           </p>
           <h2 className="mt-2 font-display text-3xl text-navy sm:text-4xl">
-            Five services. Zero guesswork.
+            Six services. Zero guesswork.
           </h2>
         </div>
         <p className="max-w-sm text-sm text-ink-soft">
-          We chose to do five things well instead of fifty things averagely.
+          We chose to do six things well instead of sixty things averagely.
           Every professional is trained, verified and rated.
         </p>
       </div>

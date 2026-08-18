@@ -11,8 +11,13 @@ const bookingSchema = new mongoose.Schema(
     date: { type: String, required: true },
     slot: { type: String, required: true },
     address: { type: String, required: true },
+    addressLat: Number,
+    addressLng: Number,
+    city: String, // customer's selected city at checkout - used to match professionals
     notes: String,
     workerName: String,
+    assignedProfessionalUid: String,
+    assignedProfessionalName: String,
     advanceAmount: Number,
     remainingAmount: Number,
     paymentStatus: {

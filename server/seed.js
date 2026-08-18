@@ -63,7 +63,7 @@ const SERVICES = [
 async function seed() {
   await connectDB();
   for (const s of SERVICES) {
-    await Service.findOneAndUpdate({ slug: s.slug }, s, { upsert: true, new: true });
+    await Service.findOneAndUpdate({ slug: s.slug }, s, { upsert: true, returnDocument: "after" });
   }
   console.log(`Seeded ${SERVICES.length} services.`);
   await mongoose.disconnect();
