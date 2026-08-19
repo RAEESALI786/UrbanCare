@@ -16,10 +16,12 @@ import AboutUs from "./pages/AboutUs";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ChatWidget from "./components/ChatWidget";
+import ScrollToTop from "./components/ScrollToTop";
 
 export default function App() {
   return (
     <div className="flex min-h-screen flex-col bg-paper">
+      <ScrollToTop />
       <Navbar />
       <LocationBar />
       <CategoryStrip />

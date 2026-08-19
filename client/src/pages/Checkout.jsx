@@ -5,10 +5,12 @@ import { useAuth } from "../context/AuthContext";
 import { useLocationCity } from "../context/LocationContext";
 import { isServiceable } from "../lib/serviceCities";
 import AddressMapPicker from "../components/AddressMapPicker";
+import useScrollToError from "../lib/useScrollToError";
 import api from "../lib/api";
 
 const SLOTS = ["9:00 AM", "11:00 AM", "1:00 PM", "3:00 PM", "5:00 PM", "7:00 PM"];
 const ADVANCE_RATE = 0.1; // customer pays 10% now, 90% after the job is done
+const PENDING_ORDER_KEY = "urbancare_pending_order";
 
 // Pulls a plain number out of a display price string like "₹21,799" or
 // "₹2,999 per room" so we can compute the 10% advance.
@@ -34,7 +36,25 @@ export default function Checkout() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { city } = useLocationCity();
-  const order = location.state;
+
+  // location.state doesn't survive the "log in, then get redirected back"
+  // round trip — navigate() after login only carries a plain path, no state.
+  // So: whenever we DO have a real order from router state, persist it to
+  // sessionStorage; whenever we don't, fall back to whatever was saved.
+  let order = location.state;
+  if (order?.serviceSlug) {
+    sessionStorage.setItem(PENDING_ORDER_KEY, JSON.stringify(order));
+  } else {
+    const saved = sessionStorage.getItem(PENDING_ORDER_KEY);
+    if (saved) {
+      try {
+        order = JSON.parse(saved);
+      } catch {
+        order = null;
+      }
+    }
+  }
+
   const serviceable = isServiceable(city);
 
   const [date, setDate] = useState("");
@@ -45,6 +65,7 @@ export default function Checkout() {
   const [notes, setNotes] = useState(order?.notes || "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const errorRef = useScrollToError(error);
   const [confirmed, setConfirmed] = useState(null);
 
   // No order was handed off (e.g. someone navigated to /checkout directly)
@@ -104,6 +125,7 @@ export default function Checkout() {
         remainingAmount,
       });
       setConfirmed(res.data);
+      sessionStorage.removeItem(PENDING_ORDER_KEY);
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -297,7 +319,7 @@ export default function Checkout() {
           </label>
 
           {error && (
-            <div className="mt-4 flex items-start gap-2 rounded-xl border border-brass/40 bg-brass/10 px-4 py-3 text-sm text-brass-dark">
+            <div ref={errorRef} className="mt-4 flex items-start gap-2 rounded-xl border border-brass/40 bg-brass/10 px-4 py-3 text-sm text-brass-dark">
               <AlertTriangle size={16} className="mt-0.5 shrink-0" />
               <span>
                 {error}{" "}

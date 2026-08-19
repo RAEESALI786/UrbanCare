@@ -23,7 +23,7 @@ router.post("/register", requireAuth, async (req, res) => {
         city,
         category,
       },
-      { upsert: true, new: true }
+      { upsert: true, new: "after" }
     );
     res.status(201).json(professional);
   } catch (err) {

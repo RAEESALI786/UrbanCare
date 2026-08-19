@@ -2,12 +2,14 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserPlus, AlertTriangle } from "lucide-react";
 import { auth, createUserWithEmailAndPassword, updateProfile, firebaseReady } from "../lib/firebase";
+import useScrollToError from "../lib/useScrollToError";
 
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const errorRef = useScrollToError(error);
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
 
@@ -76,7 +78,7 @@ export default function Signup() {
         </label>
 
         {error && (
-          <div className="flex items-start gap-2 rounded-xl border border-brass/40 bg-brass/10 px-4 py-3 text-sm text-brass-dark">
+          <div ref={errorRef} className="flex items-start gap-2 rounded-xl border border-brass/40 bg-brass/10 px-4 py-3 text-sm text-brass-dark">
             <AlertTriangle size={16} className="mt-0.5 shrink-0" />
             <span>{error}</span>
           </div>
